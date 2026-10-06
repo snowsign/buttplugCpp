@@ -102,6 +102,9 @@ public:
 
 	void waitForEmptyConfirmQueue();
 
+    // Mutex to ensure no race conditions.
+    std::mutex msgMx;
+
 	// Mutex blocked function which grabs the currently connected devices and sensor reads.
 	std::vector<DeviceClass> getDevices();
 	SensorClass getSensors();
@@ -129,8 +132,7 @@ private:
 	// Condition variable to wait for received messages in the queue.
 	std::condition_variable cond;
 	std::condition_variable condQueue;
-	// Mutex to ensure no race conditions.
-	std::mutex msgMx;
+
 	// Callback function for when a message is received and handled.
 	std::function<void(const mhl::Messages&)> messageCallback;
 
