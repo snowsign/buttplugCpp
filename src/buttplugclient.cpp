@@ -55,9 +55,10 @@ void Client::callbackFunction(const ix::WebSocketMessagePtr& msg) {
 
 	// Set atomic variable that websocket is connected once it is open.
 	if (msg->type == ix::WebSocketMessageType::Open) {
-	    std::lock_guard<std::mutex> lock{msgMx};
+	    std::unique_lock<std::mutex> lock{msgMx};
 		wsConnected = 1;
 	    condWs.notify_all();
+	    lock.unlock();
 
 	    // Connect to server, specifically send a RequestServerInfo
 	    connectServer();
