@@ -26,9 +26,6 @@ int Client::connect(const std::function<void(const mhl::Messages&)> &callFunc) {
 	messageHandlerThread = std::thread(&Client::messageHandling, this);
 	// messageHandlerThread.detach();
 
-	// Connect to server, specifically send a RequestServerInfo
-	connectServer();
-
 	return 0;
 }
 
@@ -60,7 +57,10 @@ void Client::callbackFunction(const ix::WebSocketMessagePtr& msg) {
 	if (msg->type == ix::WebSocketMessageType::Open) {
 	    std::lock_guard<std::mutex> lock{msgMx};
 		wsConnected = 1;
-		condWs.notify_all();
+	    condWs.notify_all();
+
+	    // Connect to server, specifically send a RequestServerInfo
+	    connectServer();
 	}
 	
 	// Set atomic variable that websocket is not connected if socket closes.
